@@ -1,24 +1,24 @@
+import certifi
+import ssl
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
-
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 def send_activation_email(user, activation_link, email, mail_subject="Confirm your email"):
+    # Render die E-Mail-Vorlage
     message = render_to_string("user_auth_app/email_verification.html", {
         "user": user,
         "activation_link": activation_link
     })
 
-    send_mail(
+    # Erstelle die E-Mail-Nachricht
+    email_message = EmailMessage(
         subject=mail_subject,
-        message="",
-        from_email="no-reply@videoflix.com",
-        recipient_list=[email],
-        html_message=message,
-        fail_silently=False,
+        body=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email],
     )
+    email_message.content_subtype = "html"  # Setze den Inhaltstyp auf HTML
 
-
-def generate_activation_link(user):
-    token = user.token
-    return f"http://localhost:4200/login?activate={user.id}&token={token}"
-    # return f"http://127.0.0.1:8000/api/activate/{user.id}/{token}/"
+    # Sende die E-Mail direkt (der Backend übernimmt die Verbindung)
+    email_message.send(fail_silently=False)

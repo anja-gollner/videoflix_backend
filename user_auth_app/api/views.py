@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import get_object_or_404, redirect
-from user_auth_app.api.utils import send_activation_email, generate_activation_link
+from user_auth_app.api.utils import send_activation_email
 
 
 class RegistrationView(APIView):

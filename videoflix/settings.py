@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import certifi
+import ssl
+
+# Setze den Pfad zu den Root-Zertifikaten
+ssl_context = ssl.create_default_context()
+ssl_context.load_verify_locations(cafile=certifi.where())
 
 
 load_dotenv()
@@ -28,18 +34,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','anja-gollner.com', 'www.anja-gollner.com']
 
 # Application definition
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_BACKEND = 'videoflix.custom_email_backend.CustomEmailBackend'
+EMAIL_HOST ='smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_USER = 'anjakgollner@gmail.com'
+EMAIL_HOST_PASSWORD = 'vlfe vzct mukt khzu'
+DEFAULT_FROM_EMAIL = 'anjakgollner@gmail.com'
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -115,9 +120,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
         'PORT': '5432',
     }
 }
@@ -167,9 +172,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.getenv('REDIS'),
+        "LOCATION": f"redis://:{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0",
         "OPTIONS": {
-            "PASSWORD": os.getenv('RQ_PASSWORD'),
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         },
         "KEY_PREFIX": "videoflix"
@@ -178,18 +182,17 @@ CACHES = {
 
 RQ = {
     'DEFAULT': {
-        'WORKER_CLASS': 'patch_rq_worker.PatchedWindowsWorker',
-        "PASSWORD": os.getenv('RQ_PASSWORD'),
+        # "PASSWORD": os.getenv('REDIS_PASSWORD'),
     }
 }
 
 
 RQ_QUEUES = {
     'default': {
-        'HOST': os.getenv('LOCAL_HOST'),
-        'PORT': 6379,
+        'HOST': os.getenv('REDIS_HOST'),
+        'PORT': os.getenv('REDIS_PORT'),
         'DB': 0,
-        'PASSWORD': os.getenv('RQ_PASSWORD'),
+        # 'PASSWORD': os.getenv('REDIS_PASSWORD') if os.getenv('REDIS_PASSWORD') else None,
         'DEFAULT_TIMEOUT': 60,
     }
 }
