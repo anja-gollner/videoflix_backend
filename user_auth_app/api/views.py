@@ -56,11 +56,11 @@ class ActivationView(APIView):
             if token_generator.check_token(user, token):
                 user.is_active = True
                 user.save()
-                return redirect(f"http://localhost:4200/login/")
+                return redirect(f"https://anja-gollner.com/login/")
             else:
-                return redirect(f"http://localhost:4200/login?error=invalid_token")
+                return redirect(f"https://anja-gollner.com/login?error=invalid_token")
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return redirect(f"http://localhost:4200/login?error=invalid_link")
+            return redirect(f"https://anja-gollner.com/login?error=invalid_link")
 
 
 class LoginView(APIView):
@@ -89,7 +89,7 @@ class PasswordResetRequestView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = token_generator.make_token(user)
             current_site = get_current_site(request).domain
-            reset_link = f"http://localhost:4200/reset-password/{uid}/{token}/"
+            reset_link = f"http://anja-gollner.com/reset-password/{uid}/{token}/"
             mail_subject = "Passwort zurücksetzen"
             message = render_to_string("user_auth_app/password_reset_email.html", {
                 "user": user,
