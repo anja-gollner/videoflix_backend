@@ -175,16 +175,35 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://:{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0",
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         },
         "KEY_PREFIX": "videoflix"
     }
 }
+
+RQ_QUEUES = {
+    'default': {
+        'URL': REDIS_URL,
+        'DEFAULT_TIMEOUT': 60,
+    }
+}
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": f"redis://:{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#         },
+#         "KEY_PREFIX": "videoflix"
+#     }
+# }
 
 RQ = {
     'DEFAULT': {
@@ -193,15 +212,15 @@ RQ = {
 }
 
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': os.getenv('REDIS_HOST'),
-        'PORT': os.getenv('REDIS_PORT'),
-        'DB': 0,
-        # 'PASSWORD': os.getenv('REDIS_PASSWORD') if os.getenv('REDIS_PASSWORD') else None,
-        'DEFAULT_TIMEOUT': 60,
-    }
-}
+# RQ_QUEUES = {
+#     'default': {
+#         'HOST': os.getenv('REDIS_HOST'),
+#         'PORT': os.getenv('REDIS_PORT'),
+#         'DB': 0,
+#         # 'PASSWORD': os.getenv('REDIS_PASSWORD') if os.getenv('REDIS_PASSWORD') else None,
+#         'DEFAULT_TIMEOUT': 60,
+#     }
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
